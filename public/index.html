@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Moods</title>
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-chart.js/0.10.2/angular-chart.js"></script>
+		<script src="javascripts/app.js"></script>
+	</head>
+
+	<body ng-app="mood" ng-controller="MainCtrl">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<div class="page-header"> 
+					<h1>Moods </h1>
+				</div>
+				<canvas id="line" class="chart chart-line" chart-data="data"
+					chart-labels="labels" chart-series="series" chart-options="options"
+					chart-dataset-override="datasetOverride" chart-click="onClick">
+				</canvas>
+				<form ng-submit="addMood()">
+					<input type="number" min="1" max="10" ng-model="mood" required></input>
+					<input type="text" ng-model="notes"></input>
+					<button type="submit">Add Mood</button>
+				</form>
+
+				<div>
+					{{test}}
+				</div>
+
+				<div ng-repeat="mood in moods | orderBy: 'datetime'">
+					mood: {{mood.mood}} - date: {{mood.datetime}} - notes: {{ mood.notes }}
+				</div>
+
+			</div>
+		</div>
+	</body>
+</html>
