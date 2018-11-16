@@ -2,12 +2,17 @@ angular.module('mood', ['chart.js'])
 	.service("ChartService", ["$http", function ($http) {
 		return {
 			getMyData: async function () {
-				var data = []
+				var data = {
+					moods: [],
+					labels: []
+				}
 				await $http.get('/moods').success(function (moods) {
 					moods.forEach(mood => {
-						data.push(mood.mood)
+						data.moods.push(mood.mood)
+						data.labels.push(mood.datetime)
 					});
 				});
+				console.log("DATA", data)
 				return data
 			}
 		};
@@ -25,72 +30,59 @@ angular.module('mood', ['chart.js'])
 				$http.post('/moods', newmood).success(function (data) {
 					$scope.moods.push(data);
 				});
+				$scope.getAll();
 			};
 
 			$scope.getAll = function () {
+				ChartService.getMyData().then(function (response) {
+					console.log("RESPONSE", response)
+					$scope.data = [response.moods]
+					$scope.labels = response.labels
+					console.log("SCOPE", $scope.data, $scope.labels )
+				}, function (response) {
+					console.log("Error: " + response);
+				});
 				return $http.get('/moods').success(function (data) {
 					angular.copy(data, $scope.moods);
 				});
 			};
 			$scope.getAll();
 
-			$scope.data = [
-				[98, 65, 59, 80, 81, 56, 55, 40, 42]
-			];
+			Chart.defaults.global.defaultFontColor = 'white';
+			Chart.defaults.global.defaultFontSize = 14;
 
-			$scope.options = {
-				title: {
-				  display: true,
-				  text: 'Amount of Blue Stuff in the Warehouse',
-				  fontColor: 'lightblue',
-				  fontSize: 16
-				},
-				scales: {
-				  yAxes: [{
-					ticks: {
-					  beginAtZero: true,
-					  min: 0,
-					  max: 400
-					}
-				  }]
-				},
-			  };
+			$scope.labels = [];
+			// $scope.series = ['Series A'];
+			// $scope.data = [
+			// 	[10, 20, 34, 78, 40, 90, 120, 256, 320, 340, 310, 355]
+			// ];
+			$scope.datasetOverride = [{
+				label: "Mood",
+				fill: true,
 
-			ChartService.getMyData().then(function(response) {
-				console.log(response)
-				$scope.data = response
-			  }, function(response) {
-				console.log("Error: " + response);
-			  });
-
-
-			$scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-			
+				backgroundColor: "rgba(200,150,255,0.1)",
+				pointBorderColor: "rgba(255,255,255,1)"
+			}];
 			$scope.onClick = function (points, evt) {
-				$scope.data = [9, 6, 5, 8, 8, 5, 5, 4, 4]
+				console.log(points, evt);
 			};
-			// $scope.datasetOverride = [{ yAxisID: 'y-axis-1' }, { yAxisID: 'y-axis-2' }];
-			// $scope.options = {
-			// 	scales: {
-			// 		yAxes: [
-			// 			{
-			// 				id: 'y-axis-1',
-			// 				type: 'linear',
-			// 				display: true,
-			// 				position: 'left'
-			// 			},
-			// 			{
-			// 				id: 'y-axis-2',
-			// 				type: 'linear',
-			// 				display: true,
-			// 				position: 'right'
-			// 			}
-			// 		]
-			// 	}
-			// };
-
-
-
+			$scope.options = {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							min: 0,
+							max: 10
+						}
+					}],
+					// xAxes: [{
+					// 	type: 'time',
+					// 	time: {
+					// 		unit: 'month'
+					// 	}
+					// }]
+				},
+			};
 
 			// $scope.upvote = function(mood) {
 			//   return $http.put('/moods/' + mood._id + '/upvote')
@@ -103,16 +95,5 @@ angular.module('mood', ['chart.js'])
 			// 	$scope.upvote(mood);
 			// };
 
-
-
-
-
 		}
 	]);
-
-
-
-
-
-
-

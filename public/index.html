@@ -2,38 +2,54 @@
 <html>
 	<head>
 		<title>Moods</title>
-		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
-    	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-chart.js/0.10.2/angular-chart.js"></script>
+		<link rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.5/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.js"></script>
+    	<script src="https://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
 		<script src="javascripts/app.js"></script>
+		<link rel="stylesheet" href="stylesheets/style.css">
 	</head>
 
 	<body ng-app="mood" ng-controller="MainCtrl">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-3">
-				<div class="page-header"> 
-					<h1>Moods </h1>
+		<nav class="navbar navbar-dark">
+			<a class="navbar-brand" href="#">
+				Mongo Mood Tracker
+			</a>
+		</nav>
+		<div class="container py-5 px-5">
+			<canvas id="line" 
+					class="chart chart-line" 
+					chart-data="data" 
+					chart-labels="labels" 
+					chart-series="series" 
+					chart-options="options" 
+					chart-dataset-override="datasetOverride">
+			</canvas>
+			<form class="form-group my-3" ng-submit="addMood()">
+				<div class="row">
+					<div class="col-2">
+						<input class="form-control" type="number" min="1" max="10" ng-model="mood" placeholder="Number 1-10" required></input>
+					</div>
+					<div class="col-8">
+						<input class="form-control" type="text" ng-model="notes" placeholder="Notes"></input>
+					</div>
+					<div class="col-2">
+						<button class="btn btn-success" type="submit">Add Mood</button>
+					</div>
 				</div>
-				<canvas id="line" class="chart chart-line" chart-data="data"
-					chart-labels="labels" chart-series="series" chart-options="options"
-					chart-dataset-override="datasetOverride" chart-click="onClick">
-				</canvas>
-				<form ng-submit="addMood()">
-					<input type="number" min="1" max="10" ng-model="mood" required></input>
-					<input type="text" ng-model="notes"></input>
-					<button type="submit">Add Mood</button>
-				</form>
-
-				<div>
-					{{test}}
+			</form>
+			<br>
+			<div class="card my-2" ng-repeat="mood in moods | orderBy: '-datetime'">
+				<div class="card-header"><strong>{{mood.datetime}}</strong></div>
+				<div class="card-body">
+					<div>Mood: {{mood.mood}}</div>
+					<p>Notes: {{ mood.notes }}</p>
 				</div>
-
-				<div ng-repeat="mood in moods | orderBy: 'datetime'">
-					mood: {{mood.mood}} - date: {{mood.datetime}} - notes: {{ mood.notes }}
-				</div>
-
 			</div>
 		</div>
+		
 	</body>
 </html>
